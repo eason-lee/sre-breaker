@@ -67,6 +67,7 @@ func (rw *RollingWindow) Reduce(fn func(b *Bucket)) {
 	}
 }
 
+// 获取距离 lasttime 有了几个时间窗口
 func (rw *RollingWindow) span() int {
 	offset := int(Since(rw.lastTime) / rw.interval)
 	if 0 <= offset && offset < rw.size {
@@ -83,14 +84,15 @@ func (rw *RollingWindow) updateOffset() {
 	}
 
 	offset := rw.offset
-	// reset expired buckets
+	// 把已经过期的 buckets 重置
 	for i := 0; i < span; i++ {
 		rw.win.resetBucket((offset + i + 1) % rw.size)
 	}
 
 	rw.offset = (offset + span) % rw.size
 	now := Now()
-	// align to interval time boundary
+
+	// 与时间间隔的边界对齐
 	rw.lastTime = now - (now-rw.lastTime)%rw.interval
 }
 

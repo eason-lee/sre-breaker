@@ -19,11 +19,9 @@ const breakerSeparator = "://"
 // BreakerHandler returns a break circuit middleware.
 func GinBreakerHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		brk := NewBreaker(
-			WithName(
-				strings.Join([]string{c.Request.Method, c.Request.URL.Path},
-					breakerSeparator),
-			),
+		brk := GetBreaker(
+			strings.Join([]string{c.Request.Method, c.Request.URL.Path},
+				breakerSeparator),
 		)
 
 		promise, err := brk.Allow()
